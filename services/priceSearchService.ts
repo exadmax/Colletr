@@ -82,7 +82,19 @@ export const searchPriceAcrossMarketplaces = async (
        };
     }
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch (parseError) {
+      console.error("Erro ao parsear JSON:", parseError);
+      return {
+        min: 0,
+        max: 0,
+        avg: 0,
+        reasoning: "Erro ao processar resposta do serviço.",
+        sources
+      };
+    }
 
     return {
       min: parsed.min || 0,
