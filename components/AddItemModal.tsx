@@ -8,7 +8,7 @@ interface AddItemModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (item: ConsoleItem) => void;
-  collectionType: CollectionType;
+  collectionType: CollectionType | string;
 }
 
 const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, collectionType }) => {
