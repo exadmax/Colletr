@@ -13,6 +13,13 @@ export enum CollectionType {
   MIXED = 'Misto'
 }
 
+// Custom category support
+export interface CustomCategory {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
 export enum Condition {
   NEW = 'Novo/Lacrado',
   CIB = 'Completo na Caixa',
@@ -52,7 +59,7 @@ export interface Collection {
   id: string;
   name: string;
   description: string;
-  type: CollectionType;
+  type: CollectionType | string; // Can be enum value or custom category name
   items: ConsoleItem[];
   createdAt: string;
 }
