@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './styles.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -18,9 +17,8 @@ root.render(
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // Use base path for GitHub Pages compatibility
-    const swPath = import.meta.env.BASE_URL + 'sw.js';
-    navigator.serviceWorker.register(swPath)
+    // Use relative path for GitHub Pages compatibility
+    navigator.serviceWorker.register('./sw.js')
       .then((registration) => {
         console.log('SW registered: ', registration);
       })

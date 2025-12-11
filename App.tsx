@@ -6,35 +6,19 @@ import ConsoleList from './components/ConsoleList';
 import CollectionSwitcher from './components/CollectionSwitcher';
 import CreateCollectionModal from './components/CreateCollectionModal';
 import PriceAlertModal from './components/PriceAlertModal';
-import CategoryManager from './components/CategoryManager';
-import { ConsoleItem, Collection, CollectionType, PriceAlert, CustomCategory } from './types';
+import { ConsoleItem, Collection, CollectionType, PriceAlert } from './types';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'COLLECTION' | 'STATS'>('COLLECTION');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   
   // Alert Modal State
   const [alertModalItem, setAlertModalItem] = useState<ConsoleItem | null>(null);
   
   const [collections, setCollections] = useState<Collection[]>([]);
   const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null);
-  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
-
-  // Load custom categories
-  useEffect(() => {
-    const savedCategories = localStorage.getItem('colletr_custom_categories');
-    if (savedCategories) {
-      setCustomCategories(JSON.parse(savedCategories));
-    }
-  }, []);
-
-  // Save custom categories to localStorage (always save to persist deletions)
-  useEffect(() => {
-    localStorage.setItem('colletr_custom_categories', JSON.stringify(customCategories));
-  }, [customCategories]);
 
   // Migration and Load logic
   useEffect(() => {
@@ -109,46 +93,6 @@ function App() {
       }
       return col;
     }));
-  };
-
-  // Category management handlers
-  const handleAddCategory = (name: string) => {
-    const newCategory: CustomCategory = {
-      id: crypto.randomUUID(),
-      name,
-      createdAt: new Date().toISOString()
-    };
-    setCustomCategories(prev => [...prev, newCategory]);
-  };
-
-  const handleEditCategory = (id: string, name: string) => {
-    setCustomCategories(prev => prev.map(cat => 
-      cat.id === id ? { ...cat, name } : cat
-    ));
-    
-    // Update collections that use this category
-    setCollections(prev => prev.map(col => {
-      const oldCategory = customCategories.find(c => c.id === id);
-      if (oldCategory && col.type === oldCategory.name) {
-        return { ...col, type: name };
-      }
-      return col;
-    }));
-  };
-
-  const handleDeleteCategory = (id: string) => {
-    const categoryToDelete = customCategories.find(c => c.id === id);
-    if (!categoryToDelete) return;
-
-    // Check if any collections use this category
-    const collectionsUsingCategory = collections.filter(col => col.type === categoryToDelete.name);
-    
-    if (collectionsUsingCategory.length > 0) {
-      alert(`Não é possível excluir esta categoria pois ${collectionsUsingCategory.length} coleção(ões) a utilizam. Altere as coleções primeiro.`);
-      return;
-    }
-
-    setCustomCategories(prev => prev.filter(cat => cat.id !== id));
   };
 
   const items = activeCollection?.items || [];
@@ -263,7 +207,6 @@ function App() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreate={handleCreateCollection}
-        customCategories={customCategories}
       />
 
       <CollectionSwitcher 
@@ -273,7 +216,6 @@ function App() {
         activeId={activeCollectionId}
         onSelect={setActiveCollectionId}
         onAddNew={() => setIsCreateModalOpen(true)}
-        onManageCategories={() => setIsCategoryManagerOpen(true)}
       />
 
       <PriceAlertModal
@@ -281,15 +223,6 @@ function App() {
         onClose={() => setAlertModalItem(null)}
         item={alertModalItem}
         onSave={handleSaveAlert}
-      />
-
-      <CategoryManager
-        isOpen={isCategoryManagerOpen}
-        onClose={() => setIsCategoryManagerOpen(false)}
-        categories={customCategories}
-        onAddCategory={handleAddCategory}
-        onEditCategory={handleEditCategory}
-        onDeleteCategory={handleDeleteCategory}
       />
 
     </div>

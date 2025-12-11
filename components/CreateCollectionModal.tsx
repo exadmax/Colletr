@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import { X, FolderPlus } from 'lucide-react';
-import { Collection, CollectionType, CustomCategory } from '../types';
+import { Collection, CollectionType } from '../types';
 
 interface CreateCollectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreate: (collection: Collection) => void;
-  customCategories?: CustomCategory[];
 }
 
-const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({ isOpen, onClose, onCreate, customCategories = [] }) => {
+const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState<CollectionType | string>(CollectionType.CONSOLES);
+  const [type, setType] = useState<CollectionType>(CollectionType.CONSOLES);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,17 +63,10 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({ isOpen, o
             <label className="block text-xs font-bold text-gb-ink uppercase mb-1 font-retro">Categoria</label>
             <select 
               value={type} 
-              onChange={(e) => setType(e.target.value)}
+              onChange={(e) => setType(e.target.value as CollectionType)}
               className="w-full bg-white border-2 border-gb-ink p-2 text-gb-ink focus:border-gb-blue focus:outline-none uppercase"
             >
-              <optgroup label="PADRÃO">
-                {Object.values(CollectionType).map(t => <option key={t} value={t}>{t}</option>)}
-              </optgroup>
-              {customCategories.length > 0 && (
-                <optgroup label="PERSONALIZADAS">
-                  {customCategories.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
-                </optgroup>
-              )}
+              {Object.values(CollectionType).map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
 

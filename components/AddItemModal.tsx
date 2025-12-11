@@ -8,7 +8,7 @@ interface AddItemModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (item: ConsoleItem) => void;
-  collectionType: CollectionType | string;
+  collectionType: CollectionType;
 }
 
 const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, collectionType }) => {
@@ -77,7 +77,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, col
     setLoadingText('CONSULTANDO MERCADO...');
     
     try {
-        const valuation = await getMarketValuation(name, condition, type);
+        const valuation = await getMarketValuation(name, condition);
         
         const newItem: ConsoleItem = {
             id: crypto.randomUUID(),

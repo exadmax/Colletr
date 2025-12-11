@@ -6,7 +6,7 @@
     <title>Colletr - Coleção Retrô</title>
     
     <!-- PWA Setup -->
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="./manifest.json" />
     <meta name="theme-color" content="#e8e8e8" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -17,9 +17,92 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gb: {
+                paper: '#e8e8e8',    // Shell Grey
+                ink: '#202020',      // Text/D-Pad Black
+                red: '#a2153f',      // A/B Buttons Magenta
+                blue: '#1d338f',     // Logo Blue
+                bezel: '#5c5d63',    // Screen Bezel Grey
+                'lcd-bg': '#9bbc0f', // Original LCD Light
+                'lcd-fg': '#0f380f', // Original LCD Dark
+              }
+            },
+            fontFamily: {
+              retro: ['"Press Start 2P"', 'cursive'],
+              pixel: ['"VT323"', 'monospace'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'VT323', monospace;
+        background-color: #e8e8e8;
+        color: #202020;
+        overscroll-behavior-y: none;
+      }
+      
+      h1, h2, h3, h4, h5, h6, .font-retro {
+        font-family: 'Press Start 2P', cursive;
+      }
+
+      /* Game Boy Screen Effect for Images (Subtler now) */
+      .gb-filter {
+        filter: grayscale(100%) contrast(1.1) brightness(0.9);
+      }
+      
+      /* Green filter strictly for LCD elements */
+      .lcd-filter {
+         filter: sepia(100%) hue-rotate(50deg) saturate(300%) contrast(0.9);
+      }
+
+      /* Retro Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #e8e8e8; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #202020; 
+      }
+
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+      .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
+      .safe-area-pb { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.1/",
+    "react": "https://esm.sh/react@^19.2.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.1/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+    "recharts": "https://esm.sh/recharts@^3.5.1",
+    "lucide-react": "https://esm.sh/lucide-react@^0.560.0"
+  }
+}
+</script>
 </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

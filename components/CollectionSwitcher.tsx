@@ -1,6 +1,6 @@
 import React from 'react';
 import { Collection, CollectionType } from '../types';
-import { Gamepad2, Disc, Package, Archive, Plus, ChevronRight, Check, Settings } from 'lucide-react';
+import { Gamepad2, Disc, Package, Archive, Plus, ChevronRight, Check } from 'lucide-react';
 
 interface CollectionSwitcherProps {
   isOpen: boolean;
@@ -9,21 +9,19 @@ interface CollectionSwitcherProps {
   activeId: string | null;
   onSelect: (id: string) => void;
   onAddNew: () => void;
-  onManageCategories?: () => void;
 }
 
-const getIconForType = (type: CollectionType | string) => {
+const getIconForType = (type: CollectionType) => {
   switch (type) {
     case CollectionType.CONSOLES: return <Gamepad2 size={18} />;
     case CollectionType.GAMES: return <Disc size={18} />;
     case CollectionType.ACCESSORIES: return <Package size={18} />;
-    case CollectionType.MIXED: return <Archive size={18} />;
-    default: return <Archive size={18} />; // Custom categories use Archive icon
+    default: return <Archive size={18} />;
   }
 };
 
 const CollectionSwitcher: React.FC<CollectionSwitcherProps> = ({ 
-  isOpen, onClose, collections, activeId, onSelect, onAddNew, onManageCategories 
+  isOpen, onClose, collections, activeId, onSelect, onAddNew 
 }) => {
   return (
     <>
@@ -77,7 +75,7 @@ const CollectionSwitcher: React.FC<CollectionSwitcherProps> = ({
             )}
           </div>
 
-          <div className="p-4 border-t-4 border-gb-ink bg-gb-paper space-y-2">
+          <div className="p-4 border-t-4 border-gb-ink bg-gb-paper">
             <button
               onClick={() => {
                 onAddNew();
@@ -88,19 +86,6 @@ const CollectionSwitcher: React.FC<CollectionSwitcherProps> = ({
               <Plus size={16} />
               NOVO SLOT
             </button>
-            
-            {onManageCategories && (
-              <button
-                onClick={() => {
-                  onManageCategories();
-                  onClose();
-                }}
-                className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gb-paper text-gb-ink border-2 border-gb-ink p-3 transition-colors font-retro text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] active:translate-y-[2px] active:shadow-none"
-              >
-                <Settings size={16} />
-                GERENCIAR CATEGORIAS
-              </button>
-            )}
           </div>
         </div>
       </div>

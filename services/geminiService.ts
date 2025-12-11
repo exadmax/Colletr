@@ -1,19 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Condition, ConsoleType, CollectionType } from "../types";
 
-// Lazy initialization to avoid throwing error when API key is not set
-let ai: GoogleGenAI | null = null;
-
-const getAI = (): GoogleGenAI => {
-  if (!ai) {
-    const apiKey = process.env.API_KEY;
-    if (!apiKey) {
-      throw new Error("API Key não configurada. Por favor, configure a variável de ambiente GEMINI_API_KEY.");
-    }
-    ai = new GoogleGenAI({ apiKey });
-  }
-  return ai;
-};
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // Helper to clean JSON string from Markdown code blocks
 const cleanJsonString = (str: string): string => {
@@ -37,7 +25,7 @@ export const identifyConsoleFromImage = async (base64Image: string, contextType:
             break;
     }
 
-    const response = await getAI().models.generateContent({
+    const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: {
         parts: [
@@ -90,26 +78,14 @@ export const identifyConsoleFromImage = async (base64Image: string, contextType:
   }
 };
 
-export const getMarketValuation = async (itemName: string, condition: Condition, itemType?: ConsoleType): Promise<{ min: number; max: number; avg: number; reasoning: string; sources: string[] }> => {
+export const getMarketValuation = async (itemName: string, condition: Condition): Promise<{ min: number; max: number; avg: number; reasoning: string; sources: string[] }> => {
   try {
-    // Determine the item category for better search context
-    let itemCategory = "item de videogame";
-    if (itemType === ConsoleType.HOME || itemType === ConsoleType.HANDHELD) {
-      itemCategory = "console de videogame";
-    } else if (itemType === ConsoleType.GAME) {
-      itemCategory = "jogo de videogame";
-    } else if (itemType === ConsoleType.ACCESSORY) {
-      itemCategory = "acessório de videogame";
-    }
-
     const prompt = `
-      Atue como um especialista em avaliação de itens de videogame e colecionáveis.
-      Pesquise o valor de mercado ATUAL (hoje) para o seguinte ${itemCategory}: "${itemName}" na condição: "${condition}".
+      Atue como um especialista em avaliação de videogames retrô.
+      Pesquise o valor de mercado ATUAL (hoje) para o item: "${itemName}" na condição: "${condition}".
       
-      Pesquise em sites como eBay, MercadoLivre Brasil, OLX, PriceCharting, lojas especializadas e fóruns de colecionadores.
+      Pesquise em sites como eBay, MercadoLivre Brasil, PriceCharting e lojas especializadas.
       Considere apenas listagens vendidas recentemente ou preços médios atuais.
-      Se for um console ou acessório, considere modelos, variantes e compatibilidade.
-      Se for um jogo, considere a plataforma e região.
       
       Retorne APENAS um bloco JSON válido (sem texto extra antes ou depois) com o seguinte formato:
       {
@@ -121,7 +97,7 @@ export const getMarketValuation = async (itemName: string, condition: Condition,
       Converta todos os preços para Reais (BRL).
     `;
 
-    const response = await getAI().models.generateContent({
+    const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
