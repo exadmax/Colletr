@@ -6,6 +6,7 @@ import ConsoleList from './components/ConsoleList';
 import CollectionSwitcher from './components/CollectionSwitcher';
 import CreateCollectionModal from './components/CreateCollectionModal';
 import PriceAlertModal from './components/PriceAlertModal';
+import EditItemModal from './components/EditItemModal';
 import { ConsoleItem, Collection, CollectionType, PriceAlert } from './types';
 
 function App() {
@@ -16,6 +17,9 @@ function App() {
   
   // Alert Modal State
   const [alertModalItem, setAlertModalItem] = useState<ConsoleItem | null>(null);
+  
+  // Edit Modal State
+  const [editModalItem, setEditModalItem] = useState<ConsoleItem | null>(null);
   
   const [collections, setCollections] = useState<Collection[]>([]);
   const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null);
@@ -95,6 +99,36 @@ function App() {
     }));
   };
 
+  const handleUpdateItem = (updatedItem: ConsoleItem) => {
+    if (!activeCollectionId) return;
+
+    setCollections(prev => prev.map(col => {
+      if (col.id === activeCollectionId) {
+        const updatedItems = col.items.map(item => 
+          item.id === updatedItem.id ? updatedItem : item
+        );
+        return { ...col, items: updatedItems };
+      }
+      return col;
+    }));
+  };
+
+  const handleDeleteItem = (itemId: string) => {
+    if (!activeCollectionId) return;
+
+    setCollections(prev => prev.map(col => {
+      if (col.id === activeCollectionId) {
+        const updatedItems = col.items.filter(item => item.id !== itemId);
+        return { ...col, items: updatedItems };
+      }
+      return col;
+    }));
+  };
+
+  const handleEditItem = (item: ConsoleItem) => {
+    setEditModalItem(item);
+  };
+
   const items = activeCollection?.items || [];
   const currentCollectionType = activeCollection?.type || CollectionType.CONSOLES;
 
@@ -148,6 +182,9 @@ function App() {
                <ConsoleList 
                  items={items} 
                  onConfigureAlert={(item) => setAlertModalItem(item)}
+                 onUpdateItem={handleUpdateItem}
+                 onDeleteItem={handleDeleteItem}
+                 onEditItem={handleEditItem}
                />
             )}
             {activeTab === 'STATS' && (
@@ -223,6 +260,13 @@ function App() {
         onClose={() => setAlertModalItem(null)}
         item={alertModalItem}
         onSave={handleSaveAlert}
+      />
+
+      <EditItemModal
+        isOpen={!!editModalItem}
+        onClose={() => setEditModalItem(null)}
+        item={editModalItem}
+        onSave={handleUpdateItem}
       />
 
     </div>
