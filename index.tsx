@@ -17,8 +17,9 @@ root.render(
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // Use relative path for GitHub Pages compatibility
-    navigator.serviceWorker.register('./sw.js')
+    // Use base path for GitHub Pages compatibility
+    const swPath = import.meta.env.BASE_URL + 'sw.js';
+    navigator.serviceWorker.register(swPath)
       .then((registration) => {
         console.log('SW registered: ', registration);
       })
