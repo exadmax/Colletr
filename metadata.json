@@ -1,0 +1,7 @@
+{
+  "name": "Colletr",
+  "description": "Seu catalogador pessoal de consoles retrô com IA. Tire fotos, identifique itens e descubra o valor de mercado atualizado.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
