@@ -31,11 +31,9 @@ function App() {
     }
   }, []);
 
-  // Save custom categories to localStorage
+  // Save custom categories to localStorage (always save to persist deletions)
   useEffect(() => {
-    if (customCategories.length >= 0) {
-      localStorage.setItem('colletr_custom_categories', JSON.stringify(customCategories));
-    }
+    localStorage.setItem('colletr_custom_categories', JSON.stringify(customCategories));
   }, [customCategories]);
 
   // Migration and Load logic
