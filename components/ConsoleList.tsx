@@ -1,16 +1,22 @@
 import React, { useState, useMemo } from 'react';
 import { ConsoleItem, ConsoleType, Condition } from '../types';
-import { TrendingUp, ExternalLink, Search, Filter, X, Bell, BellRing } from 'lucide-react';
+import { TrendingUp, ExternalLink, Search, Filter, X, Bell, BellRing, DollarSign, Edit2, Trash2, Loader2 } from 'lucide-react';
 import { getRarityStyle, getRarityName } from '../services/gamificationUtils';
+import { searchPriceAcrossMarketplaces } from '../services/priceSearchService';
 
 interface ConsoleListProps {
   items: ConsoleItem[];
   onConfigureAlert: (item: ConsoleItem) => void;
+  onUpdateItem: (item: ConsoleItem) => void;
+  onDeleteItem: (itemId: string) => void;
+  onEditItem: (item: ConsoleItem) => void;
 }
 
-const ConsoleList: React.FC<ConsoleListProps> = ({ items, onConfigureAlert }) => {
+const ConsoleList: React.FC<ConsoleListProps> = ({ items, onConfigureAlert, onUpdateItem, onDeleteItem, onEditItem }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [searchingPriceFor, setSearchingPriceFor] = useState<string | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<ConsoleItem | null>(null);
   
   // Filter States
   const [filterType, setFilterType] = useState<string>('ALL');
@@ -44,6 +50,48 @@ const ConsoleList: React.FC<ConsoleListProps> = ({ items, onConfigureAlert }) =>
   };
 
   const hasActiveFilters = filterType !== 'ALL' || filterCondition !== 'ALL' || filterManufacturer !== 'ALL';
+
+  const handlePriceSearch = async (item: ConsoleItem) => {
+    setSearchingPriceFor(item.id);
+    try {
+      const result = await searchPriceAcrossMarketplaces(item.name, item.condition);
+      
+      const updatedItem: ConsoleItem = {
+        ...item,
+        valuation: {
+          currency: 'BRL',
+          minPrice: result.min,
+          maxPrice: result.max,
+          averagePrice: result.avg,
+          lastUpdated: new Date().toISOString(),
+          reasoning: result.reasoning,
+          sources: result.sources
+        }
+      };
+      
+      onUpdateItem(updatedItem);
+    } catch (error) {
+      console.error('Erro ao buscar preços:', error);
+      alert('Erro ao buscar preços. Tente novamente.');
+    } finally {
+      setSearchingPriceFor(null);
+    }
+  };
+
+  const handleDeleteClick = (item: ConsoleItem) => {
+    setItemToDelete(item);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      onDeleteItem(itemToDelete.id);
+      setItemToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setItemToDelete(null);
+  };
 
   if (items.length === 0) {
     return (
@@ -180,6 +228,38 @@ const ConsoleList: React.FC<ConsoleListProps> = ({ items, onConfigureAlert }) =>
                 </div>
 
                 <div className="flex gap-1">
+                   {/* Price Search Button */}
+                   <button
+                      onClick={() => handlePriceSearch(item)}
+                      disabled={searchingPriceFor === item.id}
+                      className="bg-white text-gb-blue w-8 h-8 flex items-center justify-center border border-gb-blue hover:bg-gb-blue hover:text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Pesquisar Preço"
+                   >
+                      {searchingPriceFor === item.id ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <DollarSign size={14} />
+                      )}
+                   </button>
+                   
+                   {/* Edit Button */}
+                   <button
+                      onClick={() => onEditItem(item)}
+                      className="bg-white text-gb-ink w-8 h-8 flex items-center justify-center border border-gb-ink hover:bg-gb-ink hover:text-white rounded-full transition-colors"
+                      title="Editar Item"
+                   >
+                      <Edit2 size={14} />
+                   </button>
+                   
+                   {/* Delete Button */}
+                   <button
+                      onClick={() => handleDeleteClick(item)}
+                      className="bg-white text-gb-red w-8 h-8 flex items-center justify-center border border-gb-red hover:bg-gb-red hover:text-white rounded-full transition-colors"
+                      title="Remover Item"
+                   >
+                      <Trash2 size={14} />
+                   </button>
+                   
                    {item.valuation?.sources.slice(0, 1).map((source, idx) => (
                      <a 
                        key={idx} 
@@ -187,6 +267,7 @@ const ConsoleList: React.FC<ConsoleListProps> = ({ items, onConfigureAlert }) =>
                        target="_blank" 
                        rel="noreferrer"
                        className="bg-white text-gb-blue w-8 h-8 flex items-center justify-center border border-gb-blue hover:bg-gb-blue hover:text-white rounded-full transition-colors"
+                       title="Ver Fonte"
                      >
                        <ExternalLink size={14} />
                      </a>
@@ -209,6 +290,35 @@ const ConsoleList: React.FC<ConsoleListProps> = ({ items, onConfigureAlert }) =>
           </div>
         )
       })
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {itemToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gb-ink/80 backdrop-blur-sm p-4">
+          <div className="bg-gb-paper w-full max-w-md overflow-hidden shadow-[8px_8px_0px_0px_#202020] border-4 border-gb-ink">
+            <div className="p-4 border-b-4 border-gb-ink bg-gb-red text-white">
+              <h2 className="text-sm font-retro uppercase">Confirmar Remoção</h2>
+            </div>
+            <div className="p-6 font-pixel text-lg text-gb-ink">
+              <p className="mb-4">Tem certeza que deseja remover este item?</p>
+              <p className="text-sm font-retro text-gb-ink/70 mb-6">{itemToDelete.name}</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 bg-gb-red text-white font-retro text-xs py-3 border-2 border-gb-red hover:bg-gb-red/90 transition-colors"
+                >
+                  REMOVER
+                </button>
+                <button
+                  onClick={cancelDelete}
+                  className="flex-1 bg-white text-gb-ink font-retro text-xs py-3 border-2 border-gb-ink hover:bg-gb-paper transition-colors"
+                >
+                  CANCELAR
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
