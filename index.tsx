@@ -13,3 +13,17 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    // Use relative path for GitHub Pages compatibility
+    navigator.serviceWorker.register('./sw.js')
+      .then((registration) => {
+        console.log('SW registered: ', registration);
+      })
+      .catch((registrationError) => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
+}

@@ -33,59 +33,59 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({ isOpen, o
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-slate-900 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-slate-700 animate-fade-in-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gb-ink/90 backdrop-blur-sm p-4">
+      <div className="bg-gb-paper w-full max-w-md shadow-[8px_8px_0px_0px_#202020] border-4 border-gb-ink animate-fade-in-up">
         
-        <div className="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <FolderPlus className="text-cyan-400" size={24} />
-            Nova Coleção
+        <div className="p-4 border-b-4 border-gb-ink flex justify-between items-center bg-gb-ink text-white">
+          <h2 className="text-sm font-retro flex items-center gap-2 uppercase">
+            <FolderPlus className="text-white" size={20} />
+            NOVO SAVE
           </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
             <X size={24} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 font-pixel text-lg text-gb-ink">
           <div>
-            <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Nome da Coleção</label>
+            <label className="block text-xs font-bold text-gb-ink uppercase mb-1 font-retro">Nome</label>
             <input 
               type="text" 
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none"
-              placeholder="Ex: Meus GameBoys"
+              className="w-full bg-white border-2 border-gb-ink p-2 text-gb-ink focus:border-gb-blue focus:outline-none uppercase"
+              placeholder="MINHA COLEÇÃO..."
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Tipo de Item</label>
+            <label className="block text-xs font-bold text-gb-ink uppercase mb-1 font-retro">Categoria</label>
             <select 
               value={type} 
               onChange={(e) => setType(e.target.value as CollectionType)}
-              className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none appearance-none"
+              className="w-full bg-white border-2 border-gb-ink p-2 text-gb-ink focus:border-gb-blue focus:outline-none uppercase"
             >
               {Object.values(CollectionType).map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Descrição (Opcional)</label>
+            <label className="block text-xs font-bold text-gb-ink uppercase mb-1 font-retro">Detalhes (Opcional)</label>
             <textarea 
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none h-24 resize-none"
-              placeholder="Ex: Coleção focada em portáteis da Nintendo..."
+              className="w-full bg-white border-2 border-gb-ink p-2 text-gb-ink focus:border-gb-blue focus:outline-none h-24 resize-none uppercase"
+              placeholder="DESCRIÇÃO..."
             />
           </div>
 
           <button 
             type="submit"
             disabled={!name}
-            className="w-full bg-cyan-500 hover:bg-cyan-600 disabled:bg-slate-700 disabled:text-slate-500 text-black font-bold py-3 rounded-xl transition-colors mt-2"
+            className="w-full bg-gb-blue hover:bg-gb-blue/90 text-white font-retro text-xs py-4 mt-2 border-2 border-transparent shadow-[4px_4px_0px_0px_#202020] active:translate-y-[2px] active:shadow-none transition-all"
           >
-            Criar Coleção
+            CRIAR
           </button>
         </form>
       </div>

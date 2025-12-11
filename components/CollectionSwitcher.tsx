@@ -25,23 +25,23 @@ const CollectionSwitcher: React.FC<CollectionSwitcherProps> = ({
 }) => {
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop with pixels */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-gb-ink/80 z-50 backdrop-blur-sm"
           onClick={onClose}
         />
       )}
 
-      {/* Drawer */}
-      <div className={`fixed top-0 left-0 bottom-0 w-80 bg-slate-900 border-r border-slate-800 z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-slate-800">
-            <h2 className="text-xl font-bold text-white">Minhas Coleções</h2>
-            <p className="text-slate-500 text-sm mt-1">Gerencie seu inventário</p>
+      {/* Retro Drawer */}
+      <div className={`fixed top-0 left-0 bottom-0 w-80 bg-gb-paper border-r-4 border-gb-ink z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex flex-col h-full font-pixel text-gb-ink">
+          <div className="p-6 border-b-4 border-gb-ink bg-gb-ink text-white">
+            <h2 className="text-sm font-retro uppercase">CARREGAR JOGO</h2>
+            <p className="text-white/70 text-sm mt-1 uppercase">Escolha o arquivo</p>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {collections.map(col => (
               <button
                 key={col.id}
@@ -49,19 +49,19 @@ const CollectionSwitcher: React.FC<CollectionSwitcherProps> = ({
                   onSelect(col.id);
                   onClose();
                 }}
-                className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between group
+                className={`w-full text-left p-3 border-2 transition-all flex items-center justify-between group shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] active:translate-y-[2px] active:shadow-none
                   ${activeId === col.id 
-                    ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400' 
-                    : 'bg-slate-800/50 border-transparent hover:bg-slate-800 text-slate-300 hover:text-white'
+                    ? 'bg-gb-ink border-gb-ink text-white' 
+                    : 'bg-white border-gb-ink text-gb-ink hover:bg-gb-paper'
                   }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${activeId === col.id ? 'bg-cyan-500 text-black' : 'bg-slate-700 text-slate-400 group-hover:bg-slate-600'}`}>
+                  <div className={`p-2 border-2 border-gb-ink ${activeId === col.id ? 'bg-gb-paper text-gb-ink' : 'bg-gb-paper text-gb-ink'}`}>
                     {getIconForType(col.type)}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sm">{col.name}</h3>
-                    <p className="text-xs opacity-70">{col.items.length} itens • {col.type}</p>
+                    <h3 className="font-bold text-lg leading-none uppercase">{col.name}</h3>
+                    <p className="text-sm opacity-80 uppercase">{col.items.length} itens • {col.type}</p>
                   </div>
                 </div>
                 {activeId === col.id && <Check size={16} />}
@@ -69,22 +69,22 @@ const CollectionSwitcher: React.FC<CollectionSwitcherProps> = ({
             ))}
 
             {collections.length === 0 && (
-              <div className="text-center py-8 text-slate-500 text-sm">
-                Nenhuma coleção encontrada.
+              <div className="text-center py-8 text-gb-ink/50 text-lg uppercase">
+                Sem arquivos salvos.
               </div>
             )}
           </div>
 
-          <div className="p-4 border-t border-slate-800 bg-slate-900">
+          <div className="p-4 border-t-4 border-gb-ink bg-gb-paper">
             <button
               onClick={() => {
                 onAddNew();
                 onClose();
               }}
-              className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-xl border border-slate-700 transition-colors font-medium text-sm"
+              className="w-full flex items-center justify-center gap-2 bg-gb-blue hover:bg-gb-blue/90 text-white p-4 border-2 border-transparent transition-colors font-retro text-xs shadow-[4px_4px_0px_0px_#202020] active:translate-y-[2px] active:shadow-none"
             >
-              <Plus size={18} />
-              Criar Nova Coleção
+              <Plus size={16} />
+              NOVO SLOT
             </button>
           </div>
         </div>

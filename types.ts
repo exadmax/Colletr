@@ -63,3 +63,20 @@ export interface CollectionStats {
   byManufacturer: { name: string; value: number }[];
   byType: { name: string; value: number }[];
 }
+
+// Gamification Types
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string; // URL for pixel art
+  isUnlocked: boolean;
+}
+
+export interface UserLevel {
+  currentLevel: number;
+  currentTitle: string;
+  xpCurrent: number;
+  xpNextLevel: number;
+  progressPercent: number;
+}

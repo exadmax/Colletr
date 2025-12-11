@@ -36,53 +36,52 @@ const PriceAlertModal: React.FC<PriceAlertModalProps> = ({ isOpen, onClose, item
     onClose();
   };
 
-  // Calculate potential trigger prices for visual feedback
   const upperTrigger = currentPrice * (1 + threshold / 100);
   const lowerTrigger = currentPrice * (1 - threshold / 100);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-slate-900 w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-slate-700 animate-fade-in-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gb-ink/90 backdrop-blur-sm p-4">
+      <div className="bg-gb-paper w-full max-w-sm shadow-[8px_8px_0px_0px_#202020] border-4 border-gb-ink animate-fade-in-up">
         
-        <div className="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <BellRing className="text-cyan-400" size={20} />
-            Alerta de Preço
+        <div className="p-4 border-b-4 border-gb-ink flex justify-between items-center bg-gb-ink text-white">
+          <h2 className="text-sm font-retro flex items-center gap-2 uppercase">
+            <BellRing className="text-white" size={16} />
+            ALARTE DE PREÇO
           </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
             <X size={24} />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 font-pixel text-gb-ink">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-800 border border-slate-700 shrink-0">
-               <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+            <div className="w-16 h-16 bg-white border-2 border-gb-ink shrink-0 overflow-hidden">
+               <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover gb-filter" />
             </div>
             <div>
-               <h3 className="font-bold text-white leading-tight">{item.name}</h3>
-               <p className="text-green-400 font-mono mt-1">
-                 R$ {currentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+               <h3 className="font-bold text-xl text-gb-ink leading-none uppercase mb-1">{item.name}</h3>
+               <p className="text-gb-ink font-bold font-retro text-xs bg-white inline-block px-1 border border-gb-ink">
+                 R$ {currentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
                </p>
             </div>
           </div>
 
-          <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div className="bg-white p-4 border-2 border-gb-ink shadow-inner">
             <div className="flex justify-between items-center mb-4">
-              <label className="text-sm font-medium text-slate-300">Ativar Notificação</label>
+              <label className="text-lg font-bold text-gb-ink uppercase">LIGAR ALARME</label>
               <button 
                 onClick={() => setEnabled(!enabled)}
-                className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? 'bg-cyan-500' : 'bg-slate-600'}`}
+                className={`w-12 h-6 border-2 border-gb-ink transition-colors relative ${enabled ? 'bg-gb-ink' : 'bg-gb-paper'}`}
               >
-                <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${enabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                <div className={`absolute top-0.5 left-0.5 w-4 h-4 border border-gb-ink transition-transform ${enabled ? 'translate-x-6 bg-white' : 'translate-x-0 bg-gb-ink'}`} />
               </button>
             </div>
 
             {enabled && (
               <div className="space-y-4 animate-fade-in">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-2">
-                    Notificar se o valor variar mais de <span className="text-white font-bold">{threshold}%</span>
+                  <label className="block text-sm text-gb-ink mb-2 uppercase">
+                    Variação maior que <span className="text-gb-ink font-bold">{threshold}%</span>
                   </label>
                   <input 
                     type="range" 
@@ -90,23 +89,22 @@ const PriceAlertModal: React.FC<PriceAlertModalProps> = ({ isOpen, onClose, item
                     max="50" 
                     value={threshold}
                     onChange={(e) => setThreshold(Number(e.target.value))}
-                    className="w-full accent-cyan-500 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                    className="w-full h-4 bg-gb-ink appearance-none cursor-pointer border border-gb-ink"
                   />
-                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                  <div className="flex justify-between text-xs text-gb-ink mt-1">
                     <span>1%</span>
-                    <span>25%</span>
                     <span>50%</span>
                   </div>
                 </div>
 
-                <div className="text-xs text-slate-400 space-y-1 pt-2 border-t border-slate-700/50">
+                <div className="text-sm text-gb-ink space-y-1 pt-2 border-t border-gb-ink border-dashed">
                    <div className="flex items-center gap-2">
-                     <TrendingUp size={14} className="text-green-500" />
-                     <span>Acima de: <span className="text-slate-200">R$ {upperTrigger.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}</span></span>
+                     <TrendingUp size={14} className="text-gb-green-dark" />
+                     <span>SOBE: <span className="text-gb-ink font-bold">R$ {upperTrigger.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}</span></span>
                    </div>
                    <div className="flex items-center gap-2">
-                     <TrendingDown size={14} className="text-red-500" />
-                     <span>Abaixo de: <span className="text-slate-200">R$ {lowerTrigger.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}</span></span>
+                     <TrendingDown size={14} className="text-gb-red" />
+                     <span>DESCE: <span className="text-gb-ink font-bold">R$ {lowerTrigger.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}</span></span>
                    </div>
                 </div>
               </div>
@@ -115,9 +113,9 @@ const PriceAlertModal: React.FC<PriceAlertModalProps> = ({ isOpen, onClose, item
 
           <button 
             onClick={handleSave}
-            className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-bold py-3 rounded-xl transition-colors"
+            className="w-full bg-gb-ink hover:bg-gb-ink/90 text-white font-retro text-xs py-4 border-2 border-transparent shadow-[4px_4px_0px_0px_#202020] active:translate-y-[2px] active:shadow-none transition-all"
           >
-            Salvar Configuração
+            CONFIRMAR
           </button>
         </div>
       </div>

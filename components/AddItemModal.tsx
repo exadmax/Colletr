@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, X, Upload, Loader2, Search, CheckCircle } from 'lucide-react';
 import { identifyConsoleFromImage, getMarketValuation } from '../services/geminiService';
+import { resizeImage } from '../services/imageUtils';
 import { Condition, ConsoleItem, ConsoleType, CollectionType } from '../types';
 
 interface AddItemModalProps {
@@ -44,39 +45,36 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, col
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const reader = new FileReader();
       
       setLoading(true);
-      setLoadingText('Processando imagem...');
+      setLoadingText('RENDERIZANDO SPRITES...');
 
-      reader.onloadend = async () => {
-        const base64 = reader.result as string;
-        setImage(base64);
+      try {
+        const compressedBase64 = await resizeImage(file, 600, 0.8);
+        setImage(compressedBase64);
+
+        setLoadingText('PROCESSANDO IA...');
         
-        // Auto-identify
-        try {
-            setLoadingText('Identificando item via IA...');
-            const pureBase64 = base64.split(',')[1];
-            const identity = await identifyConsoleFromImage(pureBase64, collectionType);
-            setName(identity.name);
-            setManufacturer(identity.manufacturer);
-            setType(identity.type);
-            setStep('DETAILS');
-        } catch (error) {
-            console.error(error);
-            // Allow manual entry if AI fails
-            setStep('DETAILS');
-        } finally {
-            setLoading(false);
-        }
-      };
-      reader.readAsDataURL(file);
+        const pureBase64 = compressedBase64.split(',')[1];
+        const identity = await identifyConsoleFromImage(pureBase64, collectionType);
+        
+        setName(identity.name);
+        setManufacturer(identity.manufacturer);
+        setType(identity.type);
+        setStep('DETAILS');
+
+      } catch (error) {
+        console.error("Erro no processamento:", error);
+        setStep('DETAILS');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handleSave = async () => {
     setLoading(true);
-    setLoadingText('Consultando valor de mercado no eBay e ML...');
+    setLoadingText('CONSULTANDO MERCADO...');
     
     try {
         const valuation = await getMarketValuation(name, condition);
@@ -105,7 +103,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, col
         onClose();
     } catch (error) {
         console.error("Failed to save", error);
-        alert("Erro ao avaliar item. Tente novamente.");
+        alert("GAME OVER. Tente novamente.");
     } finally {
         setLoading(false);
     }
@@ -114,38 +112,35 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, col
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-slate-900 w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-gb-ink/80 backdrop-blur-sm p-4">
+      <div className="bg-gb-paper w-full max-w-lg overflow-hidden shadow-[8px_8px_0px_0px_#202020] border-4 border-gb-ink flex flex-col max-h-[90vh]">
         
-        {/* Header */}
-        <div className="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <span className="text-cyan-400">Colletr</span> Adicionar
+        {/* Retro Header */}
+        <div className="p-4 border-b-4 border-gb-ink flex justify-between items-center bg-gb-ink text-white">
+          <h2 className="text-sm font-retro flex items-center gap-2 uppercase">
+            NOVO ITEM
           </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
             <X size={24} />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className="p-6 overflow-y-auto flex-1 font-pixel text-lg text-gb-ink">
           
           {loading ? (
             <div className="flex flex-col items-center justify-center h-64 space-y-4">
-              <Loader2 className="animate-spin text-cyan-400" size={48} />
-              <p className="text-slate-300 animate-pulse text-center">{loadingText}</p>
+              <Loader2 className="animate-spin text-gb-blue" size={48} />
+              <p className="text-gb-ink animate-pulse text-center font-retro text-xs">{loadingText}</p>
             </div>
           ) : (
             <>
               {step === 'PHOTO' && (
                 <div className="flex flex-col items-center justify-center h-full space-y-6 py-10">
-                  <div className="w-24 h-24 bg-slate-800 rounded-full flex items-center justify-center mb-4 ring-4 ring-cyan-500/20">
-                    <Camera size={40} className="text-cyan-400" />
+                  <div className="w-24 h-24 bg-white border-4 border-gb-ink flex items-center justify-center mb-4 rounded-full">
+                    <Camera size={40} className="text-gb-ink" />
                   </div>
-                  <h3 className="text-white text-lg font-medium text-center">Tire uma foto ou envie da galeria</h3>
-                  <p className="text-slate-400 text-sm text-center max-w-xs">
-                    Adicionando à coleção: <span className="text-cyan-400 font-bold">{collectionType}</span>
-                  </p>
+                  <h3 className="text-gb-ink font-retro text-center text-xs leading-loose">TIRE UMA FOTO OU<br/>ESCOLHA DA GALERIA</h3>
                   
                   <input 
                     type="file" 
@@ -157,17 +152,17 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, col
                   
                   <button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-cyan-500 hover:bg-cyan-600 text-black font-bold py-4 px-8 rounded-full shadow-lg shadow-cyan-500/30 flex items-center gap-2 transition-transform active:scale-95 w-full max-w-xs justify-center"
+                    className="bg-gb-blue text-white font-retro text-xs py-4 px-8 shadow-[4px_4px_0px_0px_#202020] flex items-center gap-2 transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-none w-full max-w-xs justify-center hover:bg-gb-blue/90"
                   >
-                    <Upload size={20} />
-                    Selecionar Imagem
+                    <Upload size={16} />
+                    SELECIONAR
                   </button>
 
                   <button 
                     onClick={() => setStep('DETAILS')}
-                    className="text-slate-400 hover:text-white underline text-sm mt-4"
+                    className="text-gb-ink/50 hover:text-gb-ink underline text-sm mt-4 uppercase"
                   >
-                    Inserir manualmente sem foto
+                    Pular Foto
                   </button>
                 </div>
               )}
@@ -175,42 +170,42 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, col
               {step === 'DETAILS' && (
                 <div className="space-y-4">
                   {image && (
-                    <div className="w-full h-48 bg-slate-800 rounded-lg overflow-hidden mb-4 relative">
-                        <img src={image} alt="Preview" className="w-full h-full object-cover" />
-                        <div className="absolute bottom-2 right-2 bg-green-500 text-black text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
-                            <CheckCircle size={12} /> IA Identificou
+                    <div className="w-full h-48 bg-gb-ink border-2 border-gb-ink mb-4 relative">
+                        <img src={image} alt="Preview" className="w-full h-full object-cover gb-filter" />
+                        <div className="absolute bottom-2 right-2 bg-white text-gb-ink text-xs font-bold px-2 py-1 border border-gb-ink flex items-center gap-1 shadow-sm">
+                            <CheckCircle size={12} className="text-gb-blue" /> SCAN COMPLETE
                         </div>
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Nome do Item</label>
+                    <label className="block text-xs font-bold text-gb-ink uppercase mb-1 font-retro">Nome do Item</label>
                     <input 
                       type="text" 
                       value={name} 
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none"
-                      placeholder="Ex: Super Mario World"
+                      className="w-full bg-white border-2 border-gb-ink p-2 text-gb-ink focus:border-gb-blue focus:outline-none font-pixel text-xl uppercase"
+                      placeholder="SUPER MARIO..."
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Fabricante</label>
+                      <label className="block text-xs font-bold text-gb-ink uppercase mb-1 font-retro">Fabricante</label>
                       <input 
                         type="text" 
                         value={manufacturer} 
                         onChange={(e) => setManufacturer(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none"
-                        placeholder="Ex: Nintendo"
+                        className="w-full bg-white border-2 border-gb-ink p-2 text-gb-ink focus:border-gb-blue focus:outline-none font-pixel text-xl uppercase"
+                        placeholder="NINTENDO..."
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Tipo</label>
+                      <label className="block text-xs font-bold text-gb-ink uppercase mb-1 font-retro">Tipo</label>
                       <select 
                         value={type} 
                         onChange={(e) => setType(e.target.value as ConsoleType)}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none appearance-none"
+                        className="w-full bg-white border-2 border-gb-ink p-2 text-gb-ink focus:border-gb-blue focus:outline-none font-pixel text-xl uppercase appearance-none"
                       >
                         {Object.values(ConsoleType).map(t => <option key={t} value={t}>{t}</option>)}
                       </select>
@@ -218,11 +213,11 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, col
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 uppercase mb-1">Condição</label>
+                    <label className="block text-xs font-bold text-gb-ink uppercase mb-1 font-retro">Condição</label>
                     <select 
                       value={condition} 
                       onChange={(e) => setCondition(e.target.value as Condition)}
-                      className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none appearance-none"
+                      className="w-full bg-white border-2 border-gb-ink p-2 text-gb-ink focus:border-gb-blue focus:outline-none font-pixel text-xl uppercase appearance-none"
                     >
                       {Object.values(Condition).map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
@@ -232,10 +227,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, col
                     <button 
                         onClick={handleSave}
                         disabled={!name}
-                        className="w-full bg-cyan-500 hover:bg-cyan-600 disabled:bg-slate-700 disabled:text-slate-500 text-black font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                        className="w-full bg-gb-red hover:bg-gb-red/90 disabled:bg-gb-ink/20 disabled:text-gb-ink/50 text-white font-retro text-xs py-4 border-2 border-transparent shadow-[4px_4px_0px_0px_#202020] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
                     >
-                        <Search size={20} />
-                        Avaliar & Salvar
+                        <Search size={16} />
+                        SALVAR
                     </button>
                   </div>
                 </div>

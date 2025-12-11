@@ -99,31 +99,34 @@ function App() {
   const currentCollectionType = activeCollection?.type || CollectionType.CONSOLES;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-cyan-500/30">
+    <div className="min-h-screen bg-gb-paper text-gb-ink font-pixel selection:bg-gb-red selection:text-white">
       
-      {/* Top Bar */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 z-40 flex items-center justify-between px-4 shadow-lg">
+      {/* Retro Header (Blue on Grey) */}
+      <header className="fixed top-0 left-0 right-0 h-16 bg-gb-paper border-b-4 border-gb-blue z-40 flex items-center justify-between px-4 shadow-sm">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsSidebarOpen(true)}
-            className="p-1 rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1 border-2 border-gb-ink bg-gb-paper hover:bg-gb-ink hover:text-white transition-colors shadow-[2px_2px_0px_0px_#202020] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
           >
-             <Menu size={24} className="text-slate-300" />
+             <Menu size={20} />
           </button>
           
           <div className="flex flex-col">
-            <h1 className="text-lg font-bold tracking-tight text-white leading-none">
-              {activeCollection ? activeCollection.name : 'Colletr'}
+            <h1 className="text-sm font-retro tracking-tighter leading-none italic text-gb-blue font-bold">
+              {activeCollection ? activeCollection.name : 'COLLETR'}
             </h1>
             {activeCollection && (
-              <span className="text-[10px] text-cyan-400 font-mono uppercase tracking-wide">
-                {activeCollection.type}
+              <span className="text-[10px] text-gb-ink/60 font-pixel uppercase tracking-wide">
+                /// {activeCollection.type} ///
               </span>
             )}
           </div>
         </div>
-        <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-          C
+        
+        {/* Decorative Battery Indicator */}
+        <div className="flex flex-col items-end gap-0.5">
+           <div className="text-[8px] font-retro text-gb-ink/40">BATTERY</div>
+           <div className="w-6 h-2 bg-gb-red rounded-sm opacity-80 animate-pulse"></div>
         </div>
       </header>
 
@@ -131,12 +134,12 @@ function App() {
       <main className="pt-20 max-w-3xl mx-auto min-h-screen pb-32">
         {!activeCollection ? (
           <div className="flex flex-col items-center justify-center h-[60vh] px-6 text-center space-y-6">
-             <p className="text-slate-400">Crie uma coleção para começar a catalogar seus itens.</p>
+             <p className="text-gb-ink text-xl">INSIRA UM CARTUCHO (CRIE UMA COLEÇÃO)</p>
              <button 
                onClick={() => setIsCreateModalOpen(true)}
-               className="bg-cyan-500 text-black font-bold py-3 px-6 rounded-xl hover:bg-cyan-400 transition-colors"
+               className="bg-gb-ink text-white font-retro text-sm py-4 px-6 border-4 border-gb-ink hover:scale-105 transition-transform"
              >
-               Criar Primeira Coleção
+               START GAME
              </button>
           </div>
         ) : (
@@ -154,34 +157,40 @@ function App() {
         )}
       </main>
 
-      {/* Floating Action Button (FAB) */}
+      {/* Retro FAB (A Button - Magenta) */}
       {activeCollection && (
         <button 
           onClick={() => setIsAddModalOpen(true)}
-          className="fixed bottom-24 right-6 w-14 h-14 bg-cyan-500 hover:bg-cyan-400 text-black rounded-full shadow-lg shadow-cyan-500/40 flex items-center justify-center z-40 transition-transform hover:scale-105 active:scale-95"
+          className="fixed bottom-24 right-6 w-16 h-16 bg-gb-red text-white rounded-full border-b-4 border-r-4 border-gb-red/50 shadow-lg flex items-center justify-center z-40 transition-transform active:scale-95 active:shadow-none active:border-0"
           aria-label="Adicionar Item"
         >
-          <Plus size={28} strokeWidth={3} />
+          <span className="font-retro text-2xl mb-1 ml-0.5 shadow-sm">A</span>
         </button>
       )}
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation (Select/Start bar area) */}
       {activeCollection && (
-        <nav className="fixed bottom-0 left-0 right-0 h-20 bg-slate-900 border-t border-slate-800 z-40 flex items-center justify-around px-2 pb-2 safe-area-pb">
+        <nav className="fixed bottom-0 left-0 right-0 h-20 bg-gb-paper border-t-2 border-gb-ink/20 z-40 flex items-center justify-around px-2 pb-2 safe-area-pb">
+          {/* Decorative Start/Select Slanted Pills */}
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-4 opacity-20 pointer-events-none">
+             <div className="w-12 h-3 bg-gb-ink -skew-x-12 rounded-full"></div>
+             <div className="w-12 h-3 bg-gb-ink -skew-x-12 rounded-full"></div>
+          </div>
+
           <button 
             onClick={() => setActiveTab('COLLECTION')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors w-24 ${activeTab === 'COLLECTION' ? 'text-cyan-400' : 'text-slate-500 hover:text-slate-300'}`}
+            className={`flex flex-col items-center gap-1 p-2 w-24 rounded-lg transition-all z-10 ${activeTab === 'COLLECTION' ? 'text-gb-blue font-bold' : 'text-gb-ink/50'}`}
           >
             <LayoutGrid size={24} />
-            <span className="text-xs font-medium">Itens</span>
+            <span className="text-xs font-retro">ITENS</span>
           </button>
 
           <button 
             onClick={() => setActiveTab('STATS')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors w-24 ${activeTab === 'STATS' ? 'text-cyan-400' : 'text-slate-500 hover:text-slate-300'}`}
+            className={`flex flex-col items-center gap-1 p-2 w-24 rounded-lg transition-all z-10 ${activeTab === 'STATS' ? 'text-gb-blue font-bold' : 'text-gb-ink/50'}`}
           >
             <PieIcon size={24} />
-            <span className="text-xs font-medium">Análise</span>
+            <span className="text-xs font-retro">STATS</span>
           </button>
         </nav>
       )}
