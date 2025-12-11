@@ -1,7 +1,7 @@
 const CACHE_NAME = 'colletr-cache-v1';
 const urlsToCache = [
-  './',
-  './index.html',
+  self.registration.scope,
+  self.registration.scope + 'index.html',
 ];
 
 // Install SW
