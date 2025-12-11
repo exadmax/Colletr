@@ -1,7 +1,19 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Condition, ConsoleType, CollectionType } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Lazy initialization to avoid throwing error when API key is not set
+let ai: GoogleGenAI | null = null;
+
+const getAI = (): GoogleGenAI => {
+  if (!ai) {
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      throw new Error("API Key não configurada. Configure a variável de ambiente GEMINI_API_KEY.");
+    }
+    ai = new GoogleGenAI({ apiKey });
+  }
+  return ai;
+};
 
 // Helper to clean JSON string from Markdown code blocks
 const cleanJsonString = (str: string): string => {
@@ -25,7 +37,7 @@ export const identifyConsoleFromImage = async (base64Image: string, contextType:
             break;
     }
 
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: "gemini-2.5-flash",
       contents: {
         parts: [
@@ -97,7 +109,7 @@ export const getMarketValuation = async (itemName: string, condition: Condition)
       Converta todos os preços para Reais (BRL).
     `;
 
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
