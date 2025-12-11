@@ -90,14 +90,26 @@ export const identifyConsoleFromImage = async (base64Image: string, contextType:
   }
 };
 
-export const getMarketValuation = async (itemName: string, condition: Condition): Promise<{ min: number; max: number; avg: number; reasoning: string; sources: string[] }> => {
+export const getMarketValuation = async (itemName: string, condition: Condition, itemType?: ConsoleType): Promise<{ min: number; max: number; avg: number; reasoning: string; sources: string[] }> => {
   try {
+    // Determine the item category for better search context
+    let itemCategory = "item de videogame";
+    if (itemType === ConsoleType.HOME || itemType === ConsoleType.HANDHELD) {
+      itemCategory = "console de videogame";
+    } else if (itemType === ConsoleType.GAME) {
+      itemCategory = "jogo de videogame";
+    } else if (itemType === ConsoleType.ACCESSORY) {
+      itemCategory = "acessório de videogame";
+    }
+
     const prompt = `
-      Atue como um especialista em avaliação de videogames retrô.
-      Pesquise o valor de mercado ATUAL (hoje) para o item: "${itemName}" na condição: "${condition}".
+      Atue como um especialista em avaliação de itens de videogame e colecionáveis.
+      Pesquise o valor de mercado ATUAL (hoje) para o seguinte ${itemCategory}: "${itemName}" na condição: "${condition}".
       
-      Pesquise em sites como eBay, MercadoLivre Brasil, PriceCharting e lojas especializadas.
+      Pesquise em sites como eBay, MercadoLivre Brasil, OLX, PriceCharting, lojas especializadas e fóruns de colecionadores.
       Considere apenas listagens vendidas recentemente ou preços médios atuais.
+      Se for um console ou acessório, considere modelos, variantes e compatibilidade.
+      Se for um jogo, considere a plataforma e região.
       
       Retorne APENAS um bloco JSON válido (sem texto extra antes ou depois) com o seguinte formato:
       {

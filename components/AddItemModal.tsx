@@ -77,7 +77,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd, col
     setLoadingText('CONSULTANDO MERCADO...');
     
     try {
-        const valuation = await getMarketValuation(name, condition);
+        const valuation = await getMarketValuation(name, condition, type);
         
         const newItem: ConsoleItem = {
             id: crypto.randomUUID(),
